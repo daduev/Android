@@ -26,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
+		
 		mFalseButton = (Button) findViewById(R.id.false_button);
 		mFalseButton.setOnClickListener(new View.OnClickListener() {
 			@Override
