@@ -3,13 +3,13 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical" >
-
-    <TextView android:text="@string/default_view" 
+    
+    <TextView android:text="@string/albom_view" 
         android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
         android:paddingBottom="30dp"
         android:textSize="4pt"/>    
-    
+
     <TextView android:id="@+id/question_text_view" 
         android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
