@@ -1,5 +1,6 @@
 package com.example.test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,6 +21,7 @@ public class MainActivity extends ActionBarActivity {
 	private Button mNextButton;
 	private Button mCheatButton;
 	private TextView mQuestionTextView;
+	private boolean mIsCheater;
 	
 	private TrueFalse[] mQuestionBank = new TrueFalse[] 
 	{
@@ -73,6 +75,16 @@ public class MainActivity extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
+
+				//Вызов другой активности
+				Intent intent = new Intent(MainActivity.this, CheatActivity.class);
+				boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
+				//Передача информации другой активности(компонент)
+				intent.putExtra(CheatActivity.EXTRA_ANSWER_IS_TRUE, answerIsTrue);
+
+				//startActivity(intent);
+				//Получения информации от потомков (дочерняя активность), которую вызывает текущий родитель (0-код идентификатор дочерний активности)
+				startActivityForResult(intent, 0);
 			}
 		});
 		
@@ -81,8 +93,8 @@ public class MainActivity extends ActionBarActivity {
 			Log.i(TAG, "----------------------savedInstanceState " + savedInstanceState.getInt(KEY_INDEX));
 		}
 		
+		mIsCheater = false;
 		updateQuestion();
-		
 	}
 	
 	private void updateQuestion() {
@@ -94,10 +106,14 @@ public class MainActivity extends ActionBarActivity {
 		boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
 		int messageResId = 0;
 		
-		if(userPressedTrue == answerIsTrue) {
-			messageResId = R.string.correct_toast;
-		}else{
-			messageResId = R.string.incorrect_toast;
+		if (mIsCheater) {
+			messageResId = R.string.judgment_toast;
+		} else {
+			if(userPressedTrue == answerIsTrue) {
+				messageResId = R.string.correct_toast;
+			}else{
+				messageResId = R.string.incorrect_toast;
+			}
 		}
 		Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
 	}	
@@ -121,12 +137,24 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	//Вызывается когда активность останавливается, происходит сохранения информации, для получнения ее в методе onCreate
+	//При повороте устройства, вызывается это методот, и метод onCreate
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		
 		Log.i(TAG, "onSaveInstanceState");
 		savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.i(TAG, "requestCode= " + requestCode);
+		Log.i(TAG, "resultCode= " + resultCode);
+		if (data == null) {
+			return;
+		}
+		mIsCheater = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
 	}
 	
 	@Override
