@@ -1,34 +1,23 @@
 package com.home.example.criminalintent;
 
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import java.util.UUID;
 
-public class CrimeActivity extends ActionBarActivity {
+import com.home.example.criminalintent.consts.CommonLogger;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_crime);
-	}
+import android.support.v4.app.Fragment;
+
+public class CrimeActivity extends SingleFragmentActivity {
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.crime, menu);
-		return true;
+	protected Fragment createFragment() {
+		CommonLogger.INFO(this.getClass(), "createFragment()");
+		
+		//”ниверсальный метод передачи данных из одного фрагмента в другой (из активности в активность)
+		//”ниверсальный т.к. отв€зывает зависимость фрагмента от активности, что есть хорошо, т.к. лучше когда активность знает об фрагменте который использует
+		UUID crimeId = (UUID) getIntent().getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
+		
+		return CrimeFragment.newInstance(crimeId);
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	
+	
 }
