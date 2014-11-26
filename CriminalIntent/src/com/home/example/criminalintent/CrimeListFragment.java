@@ -7,6 +7,7 @@ import com.home.example.criminalintent.consts.CommonLogger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -85,7 +86,7 @@ public class CrimeListFragment extends ListFragment {
 			titleTextView.setText(c.getTitle());
 			
 			TextView dateTextView = (TextView) convertView.findViewById(R.id.crime_list_item_dateTextView);
-			dateTextView.setText(c.getDate().toString());
+			dateTextView.setText(DateFormat.format("dd MMMM yyyy HH:mm, cccc", c.getDate()));
 			
 			CheckBox solvedCheckBox = (CheckBox) convertView.findViewById(R.id.crime_list_item_solvedCheckBox);
 			solvedCheckBox.setChecked(c.isSolved());
