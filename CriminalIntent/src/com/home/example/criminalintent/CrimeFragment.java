@@ -3,15 +3,19 @@ package com.home.example.criminalintent;
 import java.util.Date;
 import java.util.UUID;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -46,15 +50,17 @@ public class CrimeFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//	Необходимо вызвать метод, чтоб фрагмент менеджер вызвал метод создания командного меню onCreateOptionsMenu (в активити он вызывается в автомате)
+		setHasOptionsMenu(true);
 
 		//mCrime = new Crime();
 		//Прямое чтение данных из активити, есть плохо т.к. фрагмент зависит от активности (холста),зависит
 		//UUID crimeId = (UUID)getActivity().getIntent().getSerializableExtra(EXTRA_CRIME_ID);
-		CommonLogger.DEBUG(this.getClass(), getActivity().getIntent().toString());
 		
 		//Не пррямое чтение, но более гипкое т.к. фрагмент не зависит от активности
 		UUID crimeId = (UUID) getArguments().getSerializable(EXTRA_CRIME_ID);
-		mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);		
+		mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
 	}
 	
 	@Override
@@ -64,9 +70,19 @@ public class CrimeFragment extends Fragment {
 		getActivity().setResult(Activity.RESULT_FIRST_USER, null);
 	}
 	
+	@TargetApi(11)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_crime, parent, false);
+		
+		//	Проверка версии андроид на совместимость
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			//	Проверка на существования родительской активности описанной манифесте, для кнопки назад
+			if(NavUtils.getParentActivityName(getActivity()) != null) {
+				//	Вызов метода для отображение кнопки назад в командном меню
+				getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+			}
+		}		
 
 		mTitleField = (EditText) v.findViewById(R.id.crime_title);
 		mTitleField.setText(mCrime.getTitle());
@@ -112,6 +128,21 @@ public class CrimeFragment extends Fragment {
 
 		return v;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			//	Проверка на существования родительской активности описанной манифесте, для кнопки назад
+			if (NavUtils.getParentActivityName(getActivity()) != null) {
+				//	Переход к родительской активности
+				NavUtils.navigateUpFromSameTask(getActivity());
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}	
 	
 	//	Возвращение данных из DatePickerFragment
 	@Override
